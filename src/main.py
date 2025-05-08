@@ -237,10 +237,10 @@ if __name__ == '__main__':
         ## TRANSFORMAÇÕES
 
         # model
-        slice_vertices_caixa = obj_manager.get_vertices_slice(0)
+        slice_vertices_caixa = obj_manager.get_vertices_slice(obj_index=0)
         model_objeto(*slice_vertices_caixa, PROGRAM, t_z=-10)
         
-        desenha_objeto(*slice_vertices_caixa, 0)
+        desenha_objeto(*slice_vertices_caixa, texture_id=0)
 
         # view
         mat_view = view(cameraPos, cameraFront, cameraUp)
