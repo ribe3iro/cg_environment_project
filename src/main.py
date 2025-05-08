@@ -45,23 +45,23 @@ def desenha_objeto(vertice_inicial, num_vertices, texture_id=-1):
     glDrawArrays(GL_TRIANGLES, vertice_inicial, num_vertices) ## renderizando
 
 # funções callback
-def key_event(window,key,scancode,action,mods):
+def key_event(window):
     global cameraPos, cameraFront, cameraUp, deltaTime
 
-    if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
+    if glfw.get_key(window, glfw.KEY_ESCAPE) == glfw.PRESS:
         glfw.set_window_should_close(window, True)
 
     cameraSpeed = 5 * deltaTime
-    if key == glfw.KEY_W and (action == glfw.PRESS or action == glfw.REPEAT):
+    if glfw.get_key(window, glfw.KEY_W) == glfw.PRESS:
         cameraPos += cameraSpeed * cameraFront
 
-    if key == glfw.KEY_S and (action == glfw.PRESS or action == glfw.REPEAT):
+    if glfw.get_key(window, glfw.KEY_S) == glfw.PRESS:
         cameraPos -= cameraSpeed * cameraFront
 
-    if key == glfw.KEY_A and (action == glfw.PRESS or action == glfw.REPEAT):
+    if glfw.get_key(window, glfw.KEY_A) == glfw.PRESS:
         cameraPos -= glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
 
-    if key == glfw.KEY_D and (action == glfw.PRESS or action == glfw.REPEAT):
+    if glfw.get_key(window, glfw.KEY_D) == glfw.PRESS:
         cameraPos += glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
 
 # --------------------------------------------------------
@@ -156,6 +156,10 @@ if __name__ == '__main__':
         path_join(objects_path, 'caixa.obj')
     )
 
+    casa_vertices = obj_manager.load_obj(
+        path_join(objects_path, 'casa.obj')
+    )
+
     # carregando na GPU
     all_vertices = obj_manager.get_all_vertices()
     vertices = np.zeros(len(all_vertices), [("position", np.float32, 3)])
@@ -175,6 +179,7 @@ if __name__ == '__main__':
     obj_manager.load_textures([
         path_join(textures_path, 'madeira.jpg'),
         path_join(textures_path, 'tijolos.jpg'),
+        path_join(textures_path, 'casa.png')
     ])
 
     # carregando na GPU
@@ -206,7 +211,6 @@ if __name__ == '__main__':
     fov   =  45.0
 
     # adicionando callbacks
-    glfw.set_key_callback(window,key_event)
     glfw.set_cursor_pos_callback(window, mouse_event)
     glfw.set_scroll_callback(window, scroll_event)
     glfw.set_framebuffer_size_callback(window, framebuffer_size_callback)
@@ -233,6 +237,7 @@ if __name__ == '__main__':
         glPolygonMode(GL_FRONT_AND_BACK,GL_FILL)
 
         glfw.poll_events()
+        key_event(window)
 
         ## TRANSFORMAÇÕES
 
@@ -244,6 +249,10 @@ if __name__ == '__main__':
         slice_vertices_caixa2 = obj_manager.get_vertices_slice(obj_index=1)
         model_objeto(*slice_vertices_caixa2, PROGRAM, t_x=1, t_z=-10)
         desenha_objeto(*slice_vertices_caixa2, texture_id=1)
+
+        slice_vertices_casa = obj_manager.get_vertices_slice(obj_index=2)
+        model_objeto(*slice_vertices_casa, PROGRAM, t_x=1, t_y=-2, t_z=-30, r_y=-90, s_x=2, s_y=2, s_z=2)
+        desenha_objeto(*slice_vertices_casa, texture_id=2)
 
         # view
         mat_view = view(cameraPos, cameraFront, cameraUp)
