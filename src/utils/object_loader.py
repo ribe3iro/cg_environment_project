@@ -125,3 +125,5 @@ class ObjManager:
         vertices_len = len(self.vertices[obj_index])
 
         return initial_vertex_index, vertices_len
+
+# --------------------------------------------------------

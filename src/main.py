@@ -22,8 +22,8 @@ path_join = os.path.join
 
 # códigos externos
 from shaders.shader_s import Shader
-from aux.object_loader import ObjManager
-from aux.transformations_pipeline import model, view, projection
+from utils.object_loader import ObjManager
+from utils.transformations_pipeline import model, view, projection
 
 # funções auxiliares
 def model_objeto(vertice_inicial, num_vertices, program, t_x=0, t_y=0, t_z=0, s_x=1, s_y=1, s_z=1, r_x=0, r_y=0, r_z=0):
@@ -237,10 +237,13 @@ if __name__ == '__main__':
         ## TRANSFORMAÇÕES
 
         # model
-        slice_vertices_caixa = obj_manager.get_vertices_slice(obj_index=0)
-        model_objeto(*slice_vertices_caixa, PROGRAM, t_z=-10)
-        
-        desenha_objeto(*slice_vertices_caixa, texture_id=0)
+        slice_vertices_caixa1 = obj_manager.get_vertices_slice(obj_index=0)
+        model_objeto(*slice_vertices_caixa1, PROGRAM, t_x=-1, t_z=-10)
+        desenha_objeto(*slice_vertices_caixa1, texture_id=0)
+
+        slice_vertices_caixa2 = obj_manager.get_vertices_slice(obj_index=1)
+        model_objeto(*slice_vertices_caixa2, PROGRAM, t_x=1, t_z=-10)
+        desenha_objeto(*slice_vertices_caixa2, texture_id=1)
 
         # view
         mat_view = view(cameraPos, cameraFront, cameraUp)
