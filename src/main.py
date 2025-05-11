@@ -47,7 +47,11 @@ def desenha_objeto(vertice_inicial, num_vertices, texture_id=-1):
 # --------------------------------------------------------
 
 def camera_movement_handler():
-    global window, cameraPos, cameraFront, cameraUp, cameraVel, CAMERA_SPEED
+    global window, cameraFront, cameraUp, cameraVel, CAMERA_SPEED, edit_pos
+    global tx, ty, tz, rx, ry, rz, s
+
+    OBJ_MOVE_SPEED = 0.001
+    OBJ_ROT_SPEED = 0.01
 
     # W - mover câmera (frente)
     if glfw.get_key(window, glfw.KEY_W) == glfw.PRESS:
@@ -65,9 +69,52 @@ def camera_movement_handler():
     if glm.length(cameraVel) > 0:
         cameraVel = glm.normalize(cameraVel) * CAMERA_SPEED
 
+    ###################################    
+    if glfw.get_key(window, glfw.KEY_Z) == glfw.PRESS:
+        if edit_pos:
+            tx += OBJ_MOVE_SPEED
+        else:
+            rx += OBJ_ROT_SPEED
+        
+    if glfw.get_key(window, glfw.KEY_X) == glfw.PRESS:
+        if edit_pos:
+            tx -= OBJ_MOVE_SPEED
+        else:
+            rx -= OBJ_ROT_SPEED
+        
+    if glfw.get_key(window, glfw.KEY_C) == glfw.PRESS:
+        if edit_pos:
+            ty += OBJ_MOVE_SPEED
+        else:
+            ry += OBJ_ROT_SPEED
+        
+    if glfw.get_key(window, glfw.KEY_V) == glfw.PRESS:
+        if edit_pos:
+            ty -= OBJ_MOVE_SPEED
+        else:
+            ry -= OBJ_ROT_SPEED
+        
+    if glfw.get_key(window, glfw.KEY_B) == glfw.PRESS:
+        if edit_pos:
+            tz += OBJ_MOVE_SPEED
+        else:
+            rz += OBJ_ROT_SPEED
+        
+    if glfw.get_key(window, glfw.KEY_N) == glfw.PRESS:
+        if edit_pos:
+            tz -= OBJ_MOVE_SPEED
+        else:
+            rz -= OBJ_ROT_SPEED
+        
+    if glfw.get_key(window, glfw.KEY_F) == glfw.PRESS:
+        s += OBJ_MOVE_SPEED
+        
+    if glfw.get_key(window, glfw.KEY_G) == glfw.PRESS:
+        s -= OBJ_MOVE_SPEED
+
 # funções callback
 def key_event(window,key,scancode,action,mods):
-    global show_lines
+    global show_lines, edit_pos
     # ESC - fechar janela
     if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
         glfw.set_window_should_close(window, True)
@@ -79,6 +126,9 @@ def key_event(window,key,scancode,action,mods):
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         else:
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+    
+    if key == glfw.KEY_TAB and action == glfw.PRESS:
+        edit_pos = not edit_pos
 
 def framebuffer_size_callback(window, largura, altura):
     glViewport(0, 0, largura, altura)
@@ -174,6 +224,26 @@ if __name__ == '__main__':
         path_join(objects_path, 'casa.obj')
     )
 
+    mesa_escritorio = obj_manager.load_obj(
+        path_join(objects_path, 'mesa_escritorio.obj')
+    )
+
+    mesa = obj_manager.load_obj(
+        path_join(objects_path, 'mesa.obj')
+    )
+
+    cama = obj_manager.load_obj(
+        path_join(objects_path, 'cama.obj')
+    )
+
+    machado = obj_manager.load_obj(
+        path_join(objects_path, 'machado.obj')
+    )
+
+    papel = obj_manager.load_obj(
+        path_join(objects_path, 'papel.obj')
+    )
+
     # carregando na GPU
     all_vertices = obj_manager.get_all_vertices()
     vertices = np.zeros(len(all_vertices), [("position", np.float32, 3)])
@@ -193,7 +263,12 @@ if __name__ == '__main__':
     obj_manager.load_textures([
         path_join(textures_path, 'madeira.jpg'),
         path_join(textures_path, 'tijolos.jpg'),
-        path_join(textures_path, 'casa.png')
+        path_join(textures_path, 'casa.png'),
+        path_join(textures_path, 'mesa_escritorio.jpg'),
+        path_join(textures_path, 'mesa.png'),
+        path_join(textures_path, 'cama.png'),
+        path_join(textures_path, 'machado.jpg'),
+        path_join(textures_path, 'papel.png'),
     ])
 
     # carregando na GPU
@@ -210,7 +285,7 @@ if __name__ == '__main__':
     glVertexAttribPointer(loc_texture_coord, 2, GL_FLOAT, False, stride, offset)
 
     # variáveis para a movimentação da câmera
-    cameraPos   = glm.vec3(0.0, 0.0, 0.0)
+    cameraPos   = glm.vec3(0.0, 0.0, -30.0)
     cameraFront = glm.vec3(0.0, 0.0, -1.0)
     cameraUp    = glm.vec3(0.0, 1.0, 0.0)
     cameraVel   = glm.vec3(0.0, 0.0, 0.0)
@@ -218,8 +293,13 @@ if __name__ == '__main__':
     deltaTime   = 0.0
     lastFrame   = 0.0
 
+    
+    tx = ty = tz = rx = ry = rz = 0.0
+    s = 1.0
+
     # variáveis para os callbacks
     show_lines = False
+    edit_pos = True
 
     firstMouse = True
     yaw   = -90.0
@@ -273,6 +353,27 @@ if __name__ == '__main__':
         model_objeto(*slice_vertices_casa, PROGRAM, t_x=1, t_y=-2, t_z=-30, r_y=-90, s_x=2, s_y=2, s_z=2)
         desenha_objeto(*slice_vertices_casa, texture_id=2)
 
+        slice_vertices_mesa_escritorio = obj_manager.get_vertices_slice(obj_index=3)
+        model_objeto(*slice_vertices_mesa_escritorio, PROGRAM, t_x=-1.9, t_y=-1.5, t_z=-32, r_x=90, r_y=180, r_z=-90, s_x=0.01, s_y=0.01, s_z=0.01)
+        desenha_objeto(*slice_vertices_mesa_escritorio, texture_id=3)
+
+        slice_vertices_mesa = obj_manager.get_vertices_slice(obj_index=4)
+        model_objeto(*slice_vertices_mesa, PROGRAM, t_y=-1.55, t_z=-28.58, r_y=45, s_x=0.55, s_y=0.55, s_z=0.55)
+        desenha_objeto(*slice_vertices_mesa, texture_id=4)
+
+        slice_vertices_cama = obj_manager.get_vertices_slice(obj_index=5)
+        model_objeto(*slice_vertices_cama, PROGRAM, t_x=3.6, t_y=-1.56, t_z=-31.9, r_y=-90, s_x=0.007, s_y=0.007, s_z=0.007)
+        desenha_objeto(*slice_vertices_cama, texture_id=5)
+        
+        slice_vertices_machado = obj_manager.get_vertices_slice(obj_index=6)
+        model_objeto(*slice_vertices_machado, PROGRAM, t_y=-0.764, t_z=-28.75, r_y=-112)
+        desenha_objeto(*slice_vertices_machado, texture_id=6)
+        
+        slice_vertices_papel = obj_manager.get_vertices_slice(obj_index=7)
+        model_objeto(*slice_vertices_papel, PROGRAM, t_x=-2.02, t_y=-0.723, t_z=-31.965, r_y=85)
+        desenha_objeto(*slice_vertices_papel, texture_id=7)
+
+        print(f"t: ({tx}, {ty}, {tz}) r: ({rx}, {ry}, {rz}) s:  ({s})")
 
         # view
         cameraPos += cameraVel * deltaTime
