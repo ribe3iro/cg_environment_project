@@ -44,27 +44,41 @@ def desenha_objeto(vertice_inicial, num_vertices, texture_id=-1):
     # desenha o objeto
     glDrawArrays(GL_TRIANGLES, vertice_inicial, num_vertices) ## renderizando
 
-# funções callback
-def key_event(window):
-    global cameraPos, cameraFront, cameraUp, deltaTime
+# --------------------------------------------------------
 
-    if glfw.get_key(window, glfw.KEY_ESCAPE) == glfw.PRESS:
+def camera_movement_handler():
+    global window, cameraPos, cameraFront, cameraUp, cameraVel, CAMERA_SPEED
+
+    # W - mover câmera (frente)
+    if glfw.get_key(window, glfw.KEY_W) == glfw.PRESS:
+        cameraVel += glm.normalize(cameraFront)
+    # S - mover câmera (trás)
+    if glfw.get_key(window, glfw.KEY_S) == glfw.PRESS:
+        cameraVel -= glm.normalize(cameraFront)
+    # A - mover câmera (esquerda)
+    if glfw.get_key(window, glfw.KEY_A) == glfw.PRESS:
+        cameraVel -= glm.normalize(glm.cross(cameraFront, cameraUp))
+    # D - mover câmera (direita)
+    if glfw.get_key(window, glfw.KEY_D) == glfw.PRESS:
+        cameraVel += glm.normalize(glm.cross(cameraFront, cameraUp))
+    
+    if glm.length(cameraVel) > 0:
+        cameraVel = glm.normalize(cameraVel) * CAMERA_SPEED
+
+# funções callback
+def key_event(window,key,scancode,action,mods):
+    global show_lines
+    # ESC - fechar janela
+    if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
         glfw.set_window_should_close(window, True)
 
-    cameraSpeed = 5 * deltaTime
-    if glfw.get_key(window, glfw.KEY_W) == glfw.PRESS:
-        cameraPos += cameraSpeed * cameraFront
-
-    if glfw.get_key(window, glfw.KEY_S) == glfw.PRESS:
-        cameraPos -= cameraSpeed * cameraFront
-
-    if glfw.get_key(window, glfw.KEY_A) == glfw.PRESS:
-        cameraPos -= glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
-
-    if glfw.get_key(window, glfw.KEY_D) == glfw.PRESS:
-        cameraPos += glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
-
-# --------------------------------------------------------
+    # P - exibir malha poligonal
+    if key == glfw.KEY_P and action == glfw.PRESS:
+        show_lines = not show_lines
+        if show_lines:
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+        else:
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
 def framebuffer_size_callback(window, largura, altura):
     glViewport(0, 0, largura, altura)
@@ -195,12 +209,17 @@ if __name__ == '__main__':
     glEnableVertexAttribArray(loc_texture_coord)
     glVertexAttribPointer(loc_texture_coord, 2, GL_FLOAT, False, stride, offset)
 
-    # variáveis para os callbacks
+    # variáveis para a movimentação da câmera
     cameraPos   = glm.vec3(0.0, 0.0, 0.0)
     cameraFront = glm.vec3(0.0, 0.0, -1.0)
     cameraUp    = glm.vec3(0.0, 1.0, 0.0)
+    cameraVel   = glm.vec3(0.0, 0.0, 0.0)
+    CAMERA_SPEED = 5
     deltaTime   = 0.0
     lastFrame   = 0.0
+
+    # variáveis para os callbacks
+    show_lines = False
 
     firstMouse = True
     yaw   = -90.0
@@ -211,6 +230,7 @@ if __name__ == '__main__':
     fov   =  45.0
 
     # adicionando callbacks
+    glfw.set_key_callback(window, key_event)
     glfw.set_cursor_pos_callback(window, mouse_event)
     glfw.set_scroll_callback(window, scroll_event)
     glfw.set_framebuffer_size_callback(window, framebuffer_size_callback)
@@ -234,10 +254,9 @@ if __name__ == '__main__':
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glClearColor(1.0, 1.0, 1.0, 1.0)
-        glPolygonMode(GL_FRONT_AND_BACK,GL_FILL)
 
         glfw.poll_events()
-        key_event(window)
+        camera_movement_handler()
 
         ## TRANSFORMAÇÕES
 
@@ -254,10 +273,15 @@ if __name__ == '__main__':
         model_objeto(*slice_vertices_casa, PROGRAM, t_x=1, t_y=-2, t_z=-30, r_y=-90, s_x=2, s_y=2, s_z=2)
         desenha_objeto(*slice_vertices_casa, texture_id=2)
 
+
         # view
+        cameraPos += cameraVel * deltaTime
+        cameraVel = glm.vec3(0.0, 0.0, 0.0)
+
         mat_view = view(cameraPos, cameraFront, cameraUp)
         loc_view = glGetUniformLocation(PROGRAM, "view")
         glUniformMatrix4fv(loc_view, 1, GL_TRUE, mat_view)
+
 
         # projection
         mat_projection = projection(fov, LARGURA_JANELA, ALTURA_JANELA)
