@@ -120,10 +120,14 @@ def camera_movement_handler():
 
 # funções callback
 def key_event(window,key,scancode,action,mods):
-    global show_lines, edit_pos
+    global show_lines, edit_pos, mostrar_corpo
     # ESC - fechar janela
     if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
         glfw.set_window_should_close(window, True)
+    
+    
+    if key == glfw.KEY_SPACE and action == glfw.PRESS:
+        mostrar_corpo = not mostrar_corpo
 
     # P - exibir malha poligonal
     if key == glfw.KEY_P and action == glfw.PRESS:
@@ -142,13 +146,13 @@ def framebuffer_size_callback(window, largura, altura):
 # --------------------------------------------------------
 
 def mouse_event(window, xpos, ypos):
-    global cameraFront, cameraInitialFront, lastX, lastY, firstMouse, yaw, pitch
+    print("aqui")
+    global cameraFront, lastX, lastY, firstMouse, yaw, pitch
 
     if (firstMouse):
         lastX = xpos
         lastY = ypos
         firstMouse = False
-        cameraInitialFront = glm.normalize(cameraFront)
 
     xoffset = xpos - lastX
     yoffset = lastY - ypos # reversed since y-coordinates go from bottom to top
@@ -172,7 +176,7 @@ def mouse_event(window, xpos, ypos):
     front.x = glm.cos(glm.radians(yaw)) * glm.cos(glm.radians(pitch))
     front.y = glm.sin(glm.radians(pitch))
     front.z = glm.sin(glm.radians(yaw)) * glm.cos(glm.radians(pitch))
-    cameraFront = glm.normalize(front+cameraInitialFront)
+    cameraFront = glm.normalize(front)
 
 # --------------------------------------------------------
 
@@ -303,6 +307,8 @@ if __name__ == '__main__':
     obj_manager.load_obj(path_join(objects_path, 'tronco.obj'))
     obj_manager.load_obj(path_join(objects_path, 'fantasma.obj'))
     obj_manager.load_obj(path_join(objects_path, 'fake.obj'))
+    obj_manager.load_obj(path_join(objects_path, 'olhos.obj'))
+    obj_manager.load_obj(path_join(objects_path, 'haunter.obj'))
 
     # carregando na GPU
     objectsVAO = glGenVertexArrays(1)
@@ -336,6 +342,8 @@ if __name__ == '__main__':
     obj_manager.load_texture(path_join(textures_path, 'fantasma.png'))
     obj_manager.load_texture(path_join(textures_path, 'fake_1.png'))
     obj_manager.load_texture(path_join(textures_path, 'fake_2.png'))
+    obj_manager.load_texture(path_join(textures_path, 'olhos.png'))
+    obj_manager.load_texture(path_join(textures_path, 'haunter.png'))
 
     # carregando na GPU
     all_texture_coord = obj_manager.textures_coord_list
@@ -352,7 +360,6 @@ if __name__ == '__main__':
 
     # variáveis para a movimentação da câmera
     cameraPos   = glm.vec3(0.0, 0.0, 0.0)
-    cameraInitialFront = glm.vec3()
     cameraFront = glm.vec3(0.0, 0.0, -1.0)
     cameraUp    = glm.vec3(0.0, 1.0, 0.0)
     cameraVel   = glm.vec3(0.0, 0.0, 0.0)
@@ -360,6 +367,8 @@ if __name__ == '__main__':
     deltaTime   = 0.0
     lastFrame   = 0.0
 
+    haunter_t = 0.0
+    mostrar_corpo = False
     
     tx = ty = tz = rx = ry = rz = 0.0
     s = 1.0
@@ -369,7 +378,7 @@ if __name__ == '__main__':
     edit_pos = True
 
     firstMouse = True
-    yaw   = 90.0
+    yaw   = -90.0
     pitch =  0.0
     lastX =  LARGURA_JANELA / 2.0
     lastY =  ALTURA_JANELA / 2.0
@@ -497,6 +506,26 @@ if __name__ == '__main__':
             slice_vertices_fake = obj_manager.get_vertices_slice(obj_index=10)
             model_objeto(*slice_vertices_fake, DEFAULT_SHADER.getProgram(), t_x=fake_tx, t_y=-2, t_z=fake_tz, r_y=rot_y, s_x=8, s_y=8, s_z=8)
             desenha_objeto(*slice_vertices_fake, texture_id=12+(i%2))
+
+        escala = 10.0
+
+        haunter_x = escala * math.cos(haunter_t) + cameraPos.x
+        haunter_z = escala * math.sin(haunter_t * 0.7 + math.cos(haunter_t * 0.5)) + cameraPos.z
+
+        haunter_t += 0.001
+
+        haunter_dx = cameraPos.x - haunter_x
+        haunter_dz = cameraPos.z - haunter_z
+        haunter_rot_y = math.degrees(math.atan2(haunter_dx, haunter_dz))
+        
+        slice_vertices_olhos = obj_manager.get_vertices_slice(obj_index=11)
+        model_objeto(*slice_vertices_olhos, DEFAULT_SHADER.getProgram(),t_x=haunter_x, t_z=haunter_z, r_y=haunter_rot_y)
+        desenha_objeto(*slice_vertices_olhos, texture_id=14)
+        
+        if mostrar_corpo:
+            slice_vertices_haunter = obj_manager.get_vertices_slice(obj_index=12)
+            model_objeto(*slice_vertices_haunter, DEFAULT_SHADER.getProgram(),t_x=haunter_x, t_z=haunter_z, r_y=haunter_rot_y)
+            desenha_objeto(*slice_vertices_haunter, texture_id=15)
 
         # print(f"t: ({tx}, {ty}, {tz}) r: ({rx}, {ry}, {rz}) s:  ({s})")
         # print(cameraFront)
