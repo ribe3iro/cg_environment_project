@@ -55,10 +55,9 @@ def desenha_objeto(vertice_inicial, num_vertices, texture_id=-1, cube_map=False)
 def camera_movement_handler():
     global window, cameraFront, cameraUp 
     global cameraVel, CAMERA_SPEED_WALKING, CAMERA_SPEED_RUNNING, flying_state
-    global edit_pos, tx, ty, tz, rx, ry, rz, s
+    global edit_pos, haunter_t
 
     OBJ_MOVE_SPEED = 0.001
-    OBJ_ROT_SPEED = 0.01
     camera_speed = CAMERA_SPEED_WALKING
 
     if flying_state:
@@ -86,47 +85,13 @@ def camera_movement_handler():
         cameraVel = glm.normalize(cameraVel) * camera_speed
 
     ###################################    
-    if glfw.get_key(window, glfw.KEY_Z) == glfw.PRESS:
-        if edit_pos:
-            tx += OBJ_MOVE_SPEED
-        else:
-            rx += OBJ_ROT_SPEED
-        
-    if glfw.get_key(window, glfw.KEY_X) == glfw.PRESS:
-        if edit_pos:
-            tx -= OBJ_MOVE_SPEED
-        else:
-            rx -= OBJ_ROT_SPEED
-        
-    if glfw.get_key(window, glfw.KEY_C) == glfw.PRESS:
-        if edit_pos:
-            ty += OBJ_MOVE_SPEED
-        else:
-            ry += OBJ_ROT_SPEED
-        
-    if glfw.get_key(window, glfw.KEY_V) == glfw.PRESS:
-        if edit_pos:
-            ty -= OBJ_MOVE_SPEED
-        else:
-            ry -= OBJ_ROT_SPEED
-        
-    if glfw.get_key(window, glfw.KEY_B) == glfw.PRESS:
-        if edit_pos:
-            tz += OBJ_MOVE_SPEED
-        else:
-            rz += OBJ_ROT_SPEED
-        
-    if glfw.get_key(window, glfw.KEY_N) == glfw.PRESS:
-        if edit_pos:
-            tz -= OBJ_MOVE_SPEED
-        else:
-            rz -= OBJ_ROT_SPEED
-        
-    if glfw.get_key(window, glfw.KEY_F) == glfw.PRESS:
-        s += OBJ_MOVE_SPEED
-        
     if glfw.get_key(window, glfw.KEY_G) == glfw.PRESS:
-        s -= OBJ_MOVE_SPEED
+        haunter_t += OBJ_MOVE_SPEED
+          
+    if glfw.get_key(window, glfw.KEY_H) == glfw.PRESS:
+        haunter_t -= OBJ_MOVE_SPEED
+        
+    
 
 # funções callback
 def key_event(window,key,scancode,action,mods):
@@ -325,6 +290,8 @@ if __name__ == '__main__':
     obj_manager.load_obj(path_join(objects_path, 'fake.obj'))
     obj_manager.load_obj(path_join(objects_path, 'olhos.obj'))
     obj_manager.load_obj(path_join(objects_path, 'haunter.obj'))
+    obj_manager.load_obj(path_join(objects_path, 'muro.obj'))
+    obj_manager.load_obj(path_join(objects_path, 'lapide.obj'))
 
     # carregando na GPU
     objectsVAO = glGenVertexArrays(1)
@@ -360,6 +327,8 @@ if __name__ == '__main__':
     obj_manager.load_texture(path_join(textures_path, 'fake_2.png'))
     obj_manager.load_texture(path_join(textures_path, 'olhos.png'))
     obj_manager.load_texture(path_join(textures_path, 'haunter.png'))
+    obj_manager.load_texture(path_join(textures_path, 'muro.jpg'))
+    obj_manager.load_texture(path_join(textures_path, 'lapide.jpeg'))
 
     # carregando na GPU
     all_texture_coord = obj_manager.textures_coord_list
@@ -392,8 +361,6 @@ if __name__ == '__main__':
     # variáveis auxiliares
     haunter_t = 0.0
     mostrar_corpo = False
-    tx = ty = tz = rx = ry = rz = 0.0
-    s = 1.0
 
     # variáveis para os callbacks
     show_lines = False
@@ -496,10 +463,10 @@ if __name__ == '__main__':
         model_objeto(*slice_vertices_tronco2, DEFAULT_SHADER.getProgram(), t_x=-25, t_y=-2.3, t_z=-20)
         desenha_objeto(*slice_vertices_tronco2, texture_id=10)
         slice_vertices_tronco3 = obj_manager.get_vertices_slice(obj_index=8)
-        model_objeto(*slice_vertices_tronco3, DEFAULT_SHADER.getProgram(), t_x=45, t_y=-2.3, t_z=-15)
+        model_objeto(*slice_vertices_tronco3, DEFAULT_SHADER.getProgram(), t_x=25, t_y=-2.3, t_z=-15)
         desenha_objeto(*slice_vertices_tronco3, texture_id=10)
         slice_vertices_tronco4 = obj_manager.get_vertices_slice(obj_index=8)
-        model_objeto(*slice_vertices_tronco4, DEFAULT_SHADER.getProgram(), t_x=15, t_y=-2.3, t_z=-45)
+        model_objeto(*slice_vertices_tronco4, DEFAULT_SHADER.getProgram(), t_x=15, t_y=-2.3, t_z=-35)
         desenha_objeto(*slice_vertices_tronco4, texture_id=10)
 
         fantasma_tz = -28.6
@@ -511,8 +478,8 @@ if __name__ == '__main__':
         model_objeto(*slice_vertices_fantasma, DEFAULT_SHADER.getProgram(), t_y=-1.29, t_z=fantasma_tz, r_y=fantasma_rot_y, s_x=0.5, s_y=0.5, s_z=0.5)
         desenha_objeto(*slice_vertices_fantasma, texture_id=11)
 
-        n_fake_arvores = 10
-        raio = 80
+        n_fake_arvores = 7
+        raio = 50
         fake_cx, fake_cz = 0, -15  # centro do círculo
         for i in range(n_fake_arvores):
             angulo = 2 * math.pi * i / n_fake_arvores  # divide a circunferência em partes iguais
@@ -530,25 +497,41 @@ if __name__ == '__main__':
             model_objeto(*slice_vertices_fake, DEFAULT_SHADER.getProgram(), t_x=fake_tx, t_y=-2, t_z=fake_tz, r_y=rot_y, s_x=8, s_y=8, s_z=8)
             desenha_objeto(*slice_vertices_fake, texture_id=12+(i%2))
 
-        escala = 10.0
+        escala = 15.0
 
-        haunter_x = escala * math.cos(haunter_t) + cameraPos.x
-        haunter_z = escala * math.sin(haunter_t * 0.7 + math.cos(haunter_t * 0.5)) + cameraPos.z
-
-        haunter_t += 0.001
+        haunter_x = escala * math.cos(haunter_t)
+        haunter_z = escala * math.sin(haunter_t * 0.7 + math.cos(haunter_t * 0.5))
 
         haunter_dx = cameraPos.x - haunter_x
         haunter_dz = cameraPos.z - haunter_z
         haunter_rot_y = math.degrees(math.atan2(haunter_dx, haunter_dz))
         
         slice_vertices_olhos = obj_manager.get_vertices_slice(obj_index=11)
-        model_objeto(*slice_vertices_olhos, DEFAULT_SHADER.getProgram(),t_x=haunter_x, t_z=haunter_z, r_y=haunter_rot_y)
+        model_objeto(*slice_vertices_olhos, DEFAULT_SHADER.getProgram(),t_x=haunter_x, t_z=haunter_z-10, r_y=haunter_rot_y)
         desenha_objeto(*slice_vertices_olhos, texture_id=14)
         
         if mostrar_corpo:
             slice_vertices_haunter = obj_manager.get_vertices_slice(obj_index=12)
-            model_objeto(*slice_vertices_haunter, DEFAULT_SHADER.getProgram(),t_x=haunter_x, t_z=haunter_z, r_y=haunter_rot_y)
+            model_objeto(*slice_vertices_haunter, DEFAULT_SHADER.getProgram(),t_x=haunter_x, t_z=haunter_z-10, r_y=haunter_rot_y)
             desenha_objeto(*slice_vertices_haunter, texture_id=15)
+
+        tamanho_muro = 4
+
+        for j in Z_LIMIT:
+            for i in range(X_LIMIT[0], X_LIMIT[1], tamanho_muro):
+                slice_vertices_muro= obj_manager.get_vertices_slice(obj_index=13)
+                model_objeto(*slice_vertices_muro, DEFAULT_SHADER.getProgram(),t_x=i, t_y=0.4, t_z=j)
+                desenha_objeto(*slice_vertices_muro, texture_id=16)
+        
+        for j in X_LIMIT:
+            for i in range(Z_LIMIT[0], Z_LIMIT[1]+ tamanho_muro, tamanho_muro):
+                slice_vertices_muro= obj_manager.get_vertices_slice(obj_index=13)
+                model_objeto(*slice_vertices_muro, DEFAULT_SHADER.getProgram(),t_x=j, t_y=0.4, t_z=i, r_y=90)
+                desenha_objeto(*slice_vertices_muro, texture_id=16)
+
+        slice_vertices_muro= obj_manager.get_vertices_slice(obj_index=14)
+        model_objeto(*slice_vertices_muro, DEFAULT_SHADER.getProgram(),t_x=5, t_y=-1.6,t_z=-32.4,r_y=90, s_x=0.01, s_y=0.01, s_z=0.01)
+        desenha_objeto(*slice_vertices_muro, texture_id=17)
 
         # view
         cameraPos += cameraVel * deltaTime
