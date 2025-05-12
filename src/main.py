@@ -55,9 +55,9 @@ def desenha_objeto(vertice_inicial, num_vertices, texture_id=-1, cube_map=False)
 def camera_movement_handler():
     global window, cameraFront, cameraUp 
     global cameraVel, CAMERA_SPEED_WALKING, CAMERA_SPEED_RUNNING, flying_state
-    global edit_pos, haunter_t
+    global edit_pos, haunter_t, deltaTime
 
-    OBJ_MOVE_SPEED = 0.001
+    OBJ_MOVE_SPEED = 1
     camera_speed = CAMERA_SPEED_WALKING
 
     if flying_state:
@@ -86,10 +86,10 @@ def camera_movement_handler():
 
     ###################################    
     if glfw.get_key(window, glfw.KEY_G) == glfw.PRESS:
-        haunter_t += OBJ_MOVE_SPEED
+        haunter_t += OBJ_MOVE_SPEED * deltaTime
           
     if glfw.get_key(window, glfw.KEY_H) == glfw.PRESS:
-        haunter_t -= OBJ_MOVE_SPEED
+        haunter_t -= OBJ_MOVE_SPEED * deltaTime
         
     
 
