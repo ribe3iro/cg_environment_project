@@ -57,8 +57,26 @@ def load_texture_from_file(texture_id, texture_img):
     img_width = img.size[0]
     img_height = img.size[1]
     image_data = img.tobytes("raw", "RGB", 0, -1)
-    #image_data = np.array(list(img.getdata()), np.uint8)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_width, img_height, 0, GL_RGB, GL_UNSIGNED_BYTE, image_data)
+
+# --------------------------------------------------------
+
+def load_cubemap_texture_from_files(texture_id, texture_imgs_list):
+    print(texture_id, texture_imgs_list)
+    texture_id = glGenTextures(1)
+    glBindTexture(GL_TEXTURE_CUBE_MAP, texture_id)
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE)
+    for i, texture_img in enumerate(texture_imgs_list):
+        img = Image.open(texture_img)
+        img = img.transpose(Image.FLIP_TOP_BOTTOM)
+        img_width = img.size[0]
+        img_height = img.size[1]
+        image_data = img.tobytes("raw", "RGB", 0, -1)
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, img_width, img_height, 0, GL_RGB, GL_UNSIGNED_BYTE, image_data)
 
 # --------------------------------------------------------
 
@@ -78,7 +96,7 @@ class ObjManager:
     def __init__(self):
         self.vertices = []
         self.textures_coord_list = []
-        self.num_textures = 0
+        self.curr_texture_id = 1
 
     # --------------------------------------------------------
 
@@ -101,10 +119,13 @@ class ObjManager:
 
     # --------------------------------------------------------
 
-    def load_textures(self, textures_list):
-        for i in range(len(textures_list)):
-            load_texture_from_file(self.num_textures, textures_list[i])
-            self.num_textures += 1
+    def load_texture(self, texture_path, cube_map=False):
+        if cube_map:
+            load_cubemap_texture_from_files(self.curr_texture_id, texture_path)
+        else:
+            load_texture_from_file(self.curr_texture_id, texture_path)
+        self.curr_texture_id += 1
+        return self.curr_texture_id-1
 
     # --------------------------------------------------------
 
