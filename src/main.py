@@ -369,6 +369,7 @@ if __name__ == '__main__':
     papelPos = glm.vec3(-2.02, -0.723, -31.965)
     papelEscala = 1
     pegandoPapel = False
+    pegandoPapel = False
     haunter_t = 0.0
     mostrar_corpo = False
 
