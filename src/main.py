@@ -96,7 +96,7 @@ def camera_movement_handler():
 # funções callback
 def key_event(window,key,scancode,action,mods):
     global cameraPos, show_lines, flying_state
-    global papelPos, papelEscala, pegandoPapel, edit_pos, mostrar_corpo
+    global papelPos, papelEscala, pegandoPapel, papelVisivel, edit_pos, mostrar_corpo
     # ESC - fechar janela
     if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
         glfw.set_window_should_close(window, True)
@@ -124,6 +124,7 @@ def key_event(window,key,scancode,action,mods):
         distToNote = glm.distance(cameraPos, papelPos)
         if distToNote < 2:
             pegandoPapel = True
+            papelVisivel = not papelVisivel
     
     # TAB - toggle edição dos objetos
     if key == glfw.KEY_TAB and action == glfw.PRESS:
@@ -369,7 +370,7 @@ if __name__ == '__main__':
     papelPos = glm.vec3(-2.02, -0.723, -31.965)
     papelEscala = 1
     pegandoPapel = False
-    pegandoPapel = False
+    papelVisivel = True
     haunter_t = 0.0
     mostrar_corpo = False
 
@@ -464,10 +465,18 @@ if __name__ == '__main__':
         desenha_objeto(*slice_vertices_machado, texture_id=8)
         
         if pegandoPapel:
-            papelEscala *= (1 - (8 * deltaTime))  # 1/8 de segundo de animação
-            if papelEscala < 0.01:
-                papelEscala = 0
-                pegandoPapel = False
+            if not papelVisivel:
+                papelEscala *= (1 - (8 * deltaTime))  # 1/8 de segundo de animação
+                if papelEscala < 0.01:
+                    papelEscala = 0
+                    pegandoPapel = False
+            else:
+                if papelEscala == 0:
+                    papelEscala = 0.0001
+                papelEscala /= (1 - (8 * deltaTime))  # 1/8 de segundo de animação
+                if papelEscala > 1:
+                    papelEscala = 1
+                    pegandoPapel = False
         slice_vertices_papel = obj_manager.get_vertices_slice(obj_index=7)
         model_objeto(*slice_vertices_papel, DEFAULT_SHADER.getProgram(), 
             t_x=papelPos.x, t_y=papelPos.y, t_z=papelPos.z, 
