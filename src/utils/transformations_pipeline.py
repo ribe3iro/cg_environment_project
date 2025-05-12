@@ -30,18 +30,19 @@ def model(t_x=0, t_y=0, t_z=0, s_x=1, s_y=1, s_z=1, r_x=0, r_y=0, r_z=0):
 
 # --------------------------------------------------------
 
-def view(pos, front, up):
+def view(pos, front, up, toNumpy=False):
     mat_view = glm.lookAt(pos, pos + front, up)
-    mat_view = np.array(mat_view)
+    if toNumpy:
+        mat_view = np.array(mat_view)
     return mat_view
 
 # --------------------------------------------------------
 
-def projection(fov, width, height):
+def projection(fov, width, height, toNumpy=False):
     # perspective parameters: fovy, aspect, near, far
     mat_projection = glm.perspective(glm.radians(fov), width/height, 0.1, 100.0)
-
-    mat_projection = np.array(mat_projection)
+    if toNumpy:
+        mat_projection = np.array(mat_projection)
     return mat_projection
 
 # --------------------------------------------------------
