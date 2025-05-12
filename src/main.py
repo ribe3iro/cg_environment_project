@@ -457,13 +457,13 @@ if __name__ == '__main__':
         desenha_objeto(*slice_vertices_papel, texture_id=9)
         
         slice_vertices_tronco = obj_manager.get_vertices_slice(obj_index=8)
-        model_objeto(*slice_vertices_tronco, PROGRAM, t_x=-5, t_y=-2.3)
-        desenha_objeto(*slice_vertices_tronco, texture_id=8)
+        model_objeto(*slice_vertices_tronco, DEFAULT_SHADER.getProgram(), t_x=-5, t_y=-2.3)
+        desenha_objeto(*slice_vertices_tronco, texture_id=10)
 
         
         slice_vertices_fantasma = obj_manager.get_vertices_slice(obj_index=9)
-        model_objeto(*slice_vertices_fantasma, PROGRAM, t_z=-30)
-        desenha_objeto(*slice_vertices_fantasma, texture_id=9)
+        model_objeto(*slice_vertices_fantasma, DEFAULT_SHADER.getProgram(), t_z=-30)
+        desenha_objeto(*slice_vertices_fantasma, texture_id=11)
 
         print(f"t: ({tx}, {ty}, {tz}) r: ({rx}, {ry}, {rz}) s:  ({s})")
 
