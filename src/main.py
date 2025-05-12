@@ -463,7 +463,7 @@ if __name__ == '__main__':
         desenha_objeto(*slice_vertices_machado, texture_id=8)
         
         if pegandoPapel:
-            papelEscala *= 0.9 * deltaTime * 50
+            papelEscala *= (1 - (8 * deltaTime))  # 1/8 de segundo de animação
             if papelEscala < 0.01:
                 papelEscala = 0
                 pegandoPapel = False
