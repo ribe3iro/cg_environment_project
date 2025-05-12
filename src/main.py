@@ -54,25 +54,30 @@ def desenha_objeto(vertice_inicial, num_vertices, texture_id=-1, cube_map=False)
 
 def camera_movement_handler():
     global window, cameraFront, cameraUp 
-    global cameraVel, CAMERA_SPEED_WALKING, CAMERA_SPEED_RUNNING
+    global cameraVel, CAMERA_SPEED_WALKING, CAMERA_SPEED_RUNNING, flying_state
     global edit_pos, tx, ty, tz, rx, ry, rz, s
 
     OBJ_MOVE_SPEED = 0.001
     OBJ_ROT_SPEED = 0.01
     camera_speed = CAMERA_SPEED_WALKING
 
+    if flying_state:
+        frontDir = cameraFront
+    else:
+        frontDir = glm.vec3(cameraFront.x, 0.0, cameraFront.z)
+
     # W - mover câmera (frente)
     if glfw.get_key(window, glfw.KEY_W) == glfw.PRESS:
-        cameraVel += glm.normalize(cameraFront)
+        cameraVel += glm.normalize(frontDir)
     # S - mover câmera (trás)
     if glfw.get_key(window, glfw.KEY_S) == glfw.PRESS:
-        cameraVel -= glm.normalize(cameraFront)
+        cameraVel -= glm.normalize(frontDir)
     # A - mover câmera (esquerda)
     if glfw.get_key(window, glfw.KEY_A) == glfw.PRESS:
-        cameraVel -= glm.normalize(glm.cross(cameraFront, cameraUp))
+        cameraVel -= glm.normalize(glm.cross(frontDir, cameraUp))
     # D - mover câmera (direita)
     if glfw.get_key(window, glfw.KEY_D) == glfw.PRESS:
-        cameraVel += glm.normalize(glm.cross(cameraFront, cameraUp))
+        cameraVel += glm.normalize(glm.cross(frontDir, cameraUp))
     # SHIFT - correr
     if glfw.get_key(window, glfw.KEY_LEFT_SHIFT) == glfw.PRESS:
         camera_speed = CAMERA_SPEED_RUNNING
@@ -125,7 +130,7 @@ def camera_movement_handler():
 
 # funções callback
 def key_event(window,key,scancode,action,mods):
-    global show_lines, edit_pos, mostrar_corpo
+    global cameraPos, show_lines, flying_state, edit_pos, mostrar_corpo
     # ESC - fechar janela
     if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
         glfw.set_window_should_close(window, True)
@@ -134,13 +139,19 @@ def key_event(window,key,scancode,action,mods):
     if key == glfw.KEY_SPACE and action == glfw.PRESS:
         mostrar_corpo = not mostrar_corpo
 
-    # P - exibir malha poligonal
+    # P - toggle malha poligonal
     if key == glfw.KEY_P and action == glfw.PRESS:
         show_lines = not show_lines
         if show_lines:
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         else:
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+
+    # F - toggle voar
+    if key == glfw.KEY_F and action == glfw.PRESS:
+        flying_state = not flying_state
+        if not flying_state:
+            cameraPos.y = CAMERA_HEIGHT
     
     # TAB - toggle edição dos objetos
     if key == glfw.KEY_TAB and action == glfw.PRESS:
@@ -364,12 +375,13 @@ if __name__ == '__main__':
     glVertexAttribPointer(loc_texture_coord, 2, GL_FLOAT, False, stride, offset)
 
     # variáveis para a movimentação da câmera
-    cameraPos   = glm.vec3(0.0, 0.0, 0.0)
+    CAMERA_HEIGHT = -0.4
+    cameraPos   = glm.vec3(0.0, CAMERA_HEIGHT, 0.0)
     cameraFront = glm.vec3(0.0, 0.0, -1.0)
     cameraUp    = glm.vec3(0.0, 1.0, 0.0)
     cameraVel   = glm.vec3(0.0, 0.0, 0.0)
     CAMERA_SPEED_WALKING = 5
-    CAMERA_SPEED_RUNNING = 15
+    CAMERA_SPEED_RUNNING = 10
     deltaTime   = 0.0
     lastFrame   = 0.0
     X_LIMIT = (-35, 35)
@@ -385,6 +397,7 @@ if __name__ == '__main__':
 
     # variáveis para os callbacks
     show_lines = False
+    flying_state = False
     edit_pos = True
 
     firstMouse = True
