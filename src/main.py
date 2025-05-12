@@ -301,7 +301,7 @@ if __name__ == '__main__':
 
     objects_path = path_join(ABSOLUTE_ROOT_PATH, 'objetos')
     
-    obj_manager.load_obj(path_join(objects_path, 'caixa.obj'))
+    obj_manager.load_obj(path_join(objects_path, 'chao.obj'))
     obj_manager.load_obj(path_join(objects_path, 'caixa.obj'))
     obj_manager.load_obj(path_join(objects_path, 'casa.obj'))
     obj_manager.load_obj(path_join(objects_path, 'mesa_escritorio.obj'))
@@ -335,7 +335,7 @@ if __name__ == '__main__':
     ## texturas
     textures_path = path_join(ABSOLUTE_ROOT_PATH, 'texturas')
 
-    obj_manager.load_texture(path_join(textures_path, 'madeira.jpg'))
+    obj_manager.load_texture(path_join(textures_path, 'terra.png'))
     obj_manager.load_texture(path_join(textures_path, 'tijolos.jpg'))
     obj_manager.load_texture(path_join(textures_path, 'casa.png'))
     obj_manager.load_texture(path_join(textures_path, 'mesa_escritorio.jpg'))
@@ -372,10 +372,14 @@ if __name__ == '__main__':
     CAMERA_SPEED_RUNNING = 15
     deltaTime   = 0.0
     lastFrame   = 0.0
+    X_LIMIT = (-35, 35)
+    Y_LIMIT = (-1.5, 10)
+    Z_LIMIT = (-40, 10)
 
+
+    # variáveis auxiliares
     haunter_t = 0.0
     mostrar_corpo = False
-    
     tx = ty = tz = rx = ry = rz = 0.0
     s = 1.0
 
@@ -440,9 +444,9 @@ if __name__ == '__main__':
         DEFAULT_SHADER.use()
         glBindVertexArray(objectsVAO)
         glBindBuffer(GL_ARRAY_BUFFER, objectsVBO)
-        # slice_vertices_caixa1 = obj_manager.get_vertices_slice(obj_index=0)
-        # model_objeto(*slice_vertices_caixa1, DEFAULT_SHADER.getProgram(), t_x=-1, t_z=-10)
-        # desenha_objeto(*slice_vertices_caixa1, texture_id=2)
+        slice_vertices_chao = obj_manager.get_vertices_slice(obj_index=0)
+        model_objeto(*slice_vertices_chao, DEFAULT_SHADER.getProgram(), t_z=-15, t_y=-1.6, s_x=35, s_z=25)
+        desenha_objeto(*slice_vertices_chao, texture_id=2)
 
         # slice_vertices_caixa2 = obj_manager.get_vertices_slice(obj_index=1)
         # model_objeto(*slice_vertices_caixa2, DEFAULT_SHADER.getProgram(), t_x=1, t_z=-10)
@@ -533,12 +537,25 @@ if __name__ == '__main__':
             model_objeto(*slice_vertices_haunter, DEFAULT_SHADER.getProgram(),t_x=haunter_x, t_z=haunter_z, r_y=haunter_rot_y)
             desenha_objeto(*slice_vertices_haunter, texture_id=15)
 
-        # print(f"t: ({tx}, {ty}, {tz}) r: ({rx}, {ry}, {rz}) s:  ({s})")
-        # print(cameraFront)
-
         # view
         cameraPos += cameraVel * deltaTime
         cameraVel = glm.vec3(0.0, 0.0, 0.0)
+
+        # verificando limites da cena
+        if cameraPos.x < X_LIMIT[0]:
+            cameraPos.x = X_LIMIT[0]
+        elif cameraPos.x > X_LIMIT[1]:
+            cameraPos.x = X_LIMIT[1]
+        
+        if cameraPos.y < Y_LIMIT[0]:
+            cameraPos.y = Y_LIMIT[0]
+        elif cameraPos.y > Y_LIMIT[1]:
+            cameraPos.y = Y_LIMIT[1]
+        
+        if cameraPos.z < Z_LIMIT[0]:
+            cameraPos.z = Z_LIMIT[0]
+        elif cameraPos.z > Z_LIMIT[1]:
+            cameraPos.z = Z_LIMIT[1]
 
         mat_view = view(cameraPos, cameraFront, cameraUp)
         loc_view = glGetUniformLocation(DEFAULT_SHADER.getProgram(), "view")
