@@ -53,11 +53,13 @@ def desenha_objeto(vertice_inicial, num_vertices, texture_id=-1, cube_map=False)
 # --------------------------------------------------------
 
 def camera_movement_handler():
-    global window, cameraFront, cameraUp, cameraVel, CAMERA_SPEED, edit_pos
-    global tx, ty, tz, rx, ry, rz, s
+    global window, cameraFront, cameraUp 
+    global cameraVel, CAMERA_SPEED_WALKING, CAMERA_SPEED_RUNNING
+    global edit_pos, tx, ty, tz, rx, ry, rz, s
 
     OBJ_MOVE_SPEED = 0.001
     OBJ_ROT_SPEED = 0.01
+    camera_speed = CAMERA_SPEED_WALKING
 
     # W - mover câmera (frente)
     if glfw.get_key(window, glfw.KEY_W) == glfw.PRESS:
@@ -71,9 +73,12 @@ def camera_movement_handler():
     # D - mover câmera (direita)
     if glfw.get_key(window, glfw.KEY_D) == glfw.PRESS:
         cameraVel += glm.normalize(glm.cross(cameraFront, cameraUp))
-    
+    # SHIFT - correr
+    if glfw.get_key(window, glfw.KEY_LEFT_SHIFT) == glfw.PRESS:
+        camera_speed = CAMERA_SPEED_RUNNING
+
     if glm.length(cameraVel) > 0:
-        cameraVel = glm.normalize(cameraVel) * CAMERA_SPEED
+        cameraVel = glm.normalize(cameraVel) * camera_speed
 
     ###################################    
     if glfw.get_key(window, glfw.KEY_Z) == glfw.PRESS:
@@ -125,7 +130,7 @@ def key_event(window,key,scancode,action,mods):
     if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
         glfw.set_window_should_close(window, True)
     
-    
+    # ESPAÇO - mostrar corpo do fantasma
     if key == glfw.KEY_SPACE and action == glfw.PRESS:
         mostrar_corpo = not mostrar_corpo
 
@@ -137,6 +142,7 @@ def key_event(window,key,scancode,action,mods):
         else:
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     
+    # TAB - toggle edição dos objetos
     if key == glfw.KEY_TAB and action == glfw.PRESS:
         edit_pos = not edit_pos
 
@@ -146,7 +152,6 @@ def framebuffer_size_callback(window, largura, altura):
 # --------------------------------------------------------
 
 def mouse_event(window, xpos, ypos):
-    print("aqui")
     global cameraFront, lastX, lastY, firstMouse, yaw, pitch
 
     if (firstMouse):
@@ -363,7 +368,8 @@ if __name__ == '__main__':
     cameraFront = glm.vec3(0.0, 0.0, -1.0)
     cameraUp    = glm.vec3(0.0, 1.0, 0.0)
     cameraVel   = glm.vec3(0.0, 0.0, 0.0)
-    CAMERA_SPEED = 5
+    CAMERA_SPEED_WALKING = 5
+    CAMERA_SPEED_RUNNING = 15
     deltaTime   = 0.0
     lastFrame   = 0.0
 
