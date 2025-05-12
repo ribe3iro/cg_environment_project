@@ -244,6 +244,14 @@ if __name__ == '__main__':
         path_join(objects_path, 'papel.obj')
     )
 
+    tronco = obj_manager.load_obj(
+        path_join(objects_path, 'tronco.obj')
+    )
+
+    tronco = obj_manager.load_obj(
+        path_join(objects_path, 'fantasma.obj')
+    )
+
     # carregando na GPU
     all_vertices = obj_manager.get_all_vertices()
     vertices = np.zeros(len(all_vertices), [("position", np.float32, 3)])
@@ -269,6 +277,8 @@ if __name__ == '__main__':
         path_join(textures_path, 'cama.png'),
         path_join(textures_path, 'machado.jpg'),
         path_join(textures_path, 'papel.png'),
+        path_join(textures_path, 'tronco.jpg'),
+        path_join(textures_path, 'fantasma.png'),
     ])
 
     # carregando na GPU
@@ -341,13 +351,13 @@ if __name__ == '__main__':
         ## TRANSFORMAÇÕES
 
         # model
-        slice_vertices_caixa1 = obj_manager.get_vertices_slice(obj_index=0)
-        model_objeto(*slice_vertices_caixa1, PROGRAM, t_x=-1, t_z=-10)
-        desenha_objeto(*slice_vertices_caixa1, texture_id=0)
+        # slice_vertices_caixa1 = obj_manager.get_vertices_slice(obj_index=0)
+        # model_objeto(*slice_vertices_caixa1, PROGRAM, t_x=-1, t_z=-10)
+        # desenha_objeto(*slice_vertices_caixa1, texture_id=0)
 
-        slice_vertices_caixa2 = obj_manager.get_vertices_slice(obj_index=1)
-        model_objeto(*slice_vertices_caixa2, PROGRAM, t_x=1, t_z=-10)
-        desenha_objeto(*slice_vertices_caixa2, texture_id=1)
+        # slice_vertices_caixa2 = obj_manager.get_vertices_slice(obj_index=1)
+        # model_objeto(*slice_vertices_caixa2, PROGRAM, t_x=1, t_z=-10)
+        # desenha_objeto(*slice_vertices_caixa2, texture_id=1)
 
         slice_vertices_casa = obj_manager.get_vertices_slice(obj_index=2)
         model_objeto(*slice_vertices_casa, PROGRAM, t_x=1, t_y=-2, t_z=-30, r_y=-90, s_x=2, s_y=2, s_z=2)
@@ -372,6 +382,15 @@ if __name__ == '__main__':
         slice_vertices_papel = obj_manager.get_vertices_slice(obj_index=7)
         model_objeto(*slice_vertices_papel, PROGRAM, t_x=-2.02, t_y=-0.723, t_z=-31.965, r_y=85)
         desenha_objeto(*slice_vertices_papel, texture_id=7)
+        
+        slice_vertices_tronco = obj_manager.get_vertices_slice(obj_index=8)
+        model_objeto(*slice_vertices_tronco, PROGRAM, t_x=-5, t_y=-2.3)
+        desenha_objeto(*slice_vertices_tronco, texture_id=8)
+
+        
+        slice_vertices_fantasma = obj_manager.get_vertices_slice(obj_index=9)
+        model_objeto(*slice_vertices_fantasma, PROGRAM, t_z=-30)
+        desenha_objeto(*slice_vertices_fantasma, texture_id=9)
 
         print(f"t: ({tx}, {ty}, {tz}) r: ({rx}, {ry}, {rz}) s:  ({s})")
 
