@@ -142,12 +142,13 @@ def framebuffer_size_callback(window, largura, altura):
 # --------------------------------------------------------
 
 def mouse_event(window, xpos, ypos):
-    global cameraFront, lastX, lastY, firstMouse, yaw, pitch
+    global cameraFront, cameraInitialFront, lastX, lastY, firstMouse, yaw, pitch
 
     if (firstMouse):
         lastX = xpos
         lastY = ypos
         firstMouse = False
+        cameraInitialFront = glm.normalize(cameraFront)
 
     xoffset = xpos - lastX
     yoffset = lastY - ypos # reversed since y-coordinates go from bottom to top
@@ -166,12 +167,12 @@ def mouse_event(window, xpos, ypos):
         pitch = 89.0
     if (pitch < -89.0):
         pitch = -89.0
-
+    
     front = glm.vec3()
     front.x = glm.cos(glm.radians(yaw)) * glm.cos(glm.radians(pitch))
     front.y = glm.sin(glm.radians(pitch))
     front.z = glm.sin(glm.radians(yaw)) * glm.cos(glm.radians(pitch))
-    cameraFront = glm.normalize(front)
+    cameraFront = glm.normalize(front+cameraInitialFront)
 
 # --------------------------------------------------------
 
@@ -203,6 +204,8 @@ if __name__ == '__main__':
         exit(1)
 
     glfw.make_context_current(window)
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
     ### SHADERS
     shaders_path = path_join(ABSOLUTE_ROOT_PATH, 'src', 'shaders')
@@ -297,14 +300,9 @@ if __name__ == '__main__':
     obj_manager.load_obj(path_join(objects_path, 'cama.obj'))
     obj_manager.load_obj(path_join(objects_path, 'machado.obj'))
     obj_manager.load_obj(path_join(objects_path, 'papel.obj'))
-
-    tronco = obj_manager.load_obj(
-        path_join(objects_path, 'tronco.obj')
-    )
-
-    tronco = obj_manager.load_obj(
-        path_join(objects_path, 'fantasma.obj')
-    )
+    obj_manager.load_obj(path_join(objects_path, 'tronco.obj'))
+    obj_manager.load_obj(path_join(objects_path, 'fantasma.obj'))
+    obj_manager.load_obj(path_join(objects_path, 'fake.obj'))
 
     # carregando na GPU
     objectsVAO = glGenVertexArrays(1)
@@ -336,6 +334,8 @@ if __name__ == '__main__':
     obj_manager.load_texture(path_join(textures_path, 'papel.png'))
     obj_manager.load_texture(path_join(textures_path, 'tronco.jpg'))
     obj_manager.load_texture(path_join(textures_path, 'fantasma.png'))
+    obj_manager.load_texture(path_join(textures_path, 'fake_1.png'))
+    obj_manager.load_texture(path_join(textures_path, 'fake_2.png'))
 
     # carregando na GPU
     all_texture_coord = obj_manager.textures_coord_list
@@ -351,7 +351,8 @@ if __name__ == '__main__':
     glVertexAttribPointer(loc_texture_coord, 2, GL_FLOAT, False, stride, offset)
 
     # variáveis para a movimentação da câmera
-    cameraPos   = glm.vec3(0.0, 0.0, -30.0)
+    cameraPos   = glm.vec3(0.0, 0.0, 0.0)
+    cameraInitialFront = glm.vec3()
     cameraFront = glm.vec3(0.0, 0.0, -1.0)
     cameraUp    = glm.vec3(0.0, 1.0, 0.0)
     cameraVel   = glm.vec3(0.0, 0.0, 0.0)
@@ -424,13 +425,13 @@ if __name__ == '__main__':
         DEFAULT_SHADER.use()
         glBindVertexArray(objectsVAO)
         glBindBuffer(GL_ARRAY_BUFFER, objectsVBO)
-        slice_vertices_caixa1 = obj_manager.get_vertices_slice(obj_index=0)
-        model_objeto(*slice_vertices_caixa1, DEFAULT_SHADER.getProgram(), t_x=-1, t_z=-10)
-        desenha_objeto(*slice_vertices_caixa1, texture_id=2)
+        # slice_vertices_caixa1 = obj_manager.get_vertices_slice(obj_index=0)
+        # model_objeto(*slice_vertices_caixa1, DEFAULT_SHADER.getProgram(), t_x=-1, t_z=-10)
+        # desenha_objeto(*slice_vertices_caixa1, texture_id=2)
 
-        slice_vertices_caixa2 = obj_manager.get_vertices_slice(obj_index=1)
-        model_objeto(*slice_vertices_caixa2, DEFAULT_SHADER.getProgram(), t_x=1, t_z=-10)
-        desenha_objeto(*slice_vertices_caixa2, texture_id=3)
+        # slice_vertices_caixa2 = obj_manager.get_vertices_slice(obj_index=1)
+        # model_objeto(*slice_vertices_caixa2, DEFAULT_SHADER.getProgram(), t_x=1, t_z=-10)
+        # desenha_objeto(*slice_vertices_caixa2, texture_id=3)
 
         slice_vertices_casa = obj_manager.get_vertices_slice(obj_index=2)
         model_objeto(*slice_vertices_casa, DEFAULT_SHADER.getProgram(), t_x=1, t_y=-2, t_z=-30, r_y=-90, s_x=2, s_y=2, s_z=2)
@@ -456,16 +457,49 @@ if __name__ == '__main__':
         model_objeto(*slice_vertices_papel, DEFAULT_SHADER.getProgram(), t_x=-2.02, t_y=-0.723, t_z=-31.965, r_y=85)
         desenha_objeto(*slice_vertices_papel, texture_id=9)
         
-        slice_vertices_tronco = obj_manager.get_vertices_slice(obj_index=8)
-        model_objeto(*slice_vertices_tronco, DEFAULT_SHADER.getProgram(), t_x=-5, t_y=-2.3)
-        desenha_objeto(*slice_vertices_tronco, texture_id=10)
+        slice_vertices_tronco1 = obj_manager.get_vertices_slice(obj_index=8)
+        model_objeto(*slice_vertices_tronco1, DEFAULT_SHADER.getProgram(), t_x=-5, t_y=-2.3)
+        desenha_objeto(*slice_vertices_tronco1, texture_id=10)
+        slice_vertices_tronco2 = obj_manager.get_vertices_slice(obj_index=8)
+        model_objeto(*slice_vertices_tronco2, DEFAULT_SHADER.getProgram(), t_x=-25, t_y=-2.3, t_z=-20)
+        desenha_objeto(*slice_vertices_tronco2, texture_id=10)
+        slice_vertices_tronco3 = obj_manager.get_vertices_slice(obj_index=8)
+        model_objeto(*slice_vertices_tronco3, DEFAULT_SHADER.getProgram(), t_x=45, t_y=-2.3, t_z=-15)
+        desenha_objeto(*slice_vertices_tronco3, texture_id=10)
+        slice_vertices_tronco4 = obj_manager.get_vertices_slice(obj_index=8)
+        model_objeto(*slice_vertices_tronco4, DEFAULT_SHADER.getProgram(), t_x=15, t_y=-2.3, t_z=-45)
+        desenha_objeto(*slice_vertices_tronco4, texture_id=10)
 
-        
+        fantasma_tz = -28.6
+
+        fantasma_dx = cameraPos.x
+        fantasma_dz = cameraPos.z - fantasma_tz
+        fantasma_rot_y = math.degrees(math.atan2(fantasma_dx, fantasma_dz))
         slice_vertices_fantasma = obj_manager.get_vertices_slice(obj_index=9)
-        model_objeto(*slice_vertices_fantasma, DEFAULT_SHADER.getProgram(), t_z=-30)
+        model_objeto(*slice_vertices_fantasma, DEFAULT_SHADER.getProgram(), t_y=-1.29, t_z=fantasma_tz, r_y=fantasma_rot_y, s_x=0.5, s_y=0.5, s_z=0.5)
         desenha_objeto(*slice_vertices_fantasma, texture_id=11)
 
-        print(f"t: ({tx}, {ty}, {tz}) r: ({rx}, {ry}, {rz}) s:  ({s})")
+        n_fake_arvores = 10
+        raio = 80
+        fake_cx, fake_cz = 0, -15  # centro do círculo
+        for i in range(n_fake_arvores):
+            angulo = 2 * math.pi * i / n_fake_arvores  # divide a circunferência em partes iguais
+
+            fake_tx = fake_cx + raio * math.cos(angulo)  # coordenada X
+            fake_tz = fake_cz + raio * math.sin(angulo)  # coordenada Z
+            
+            dx = cameraPos.x - fake_tx
+            dz = cameraPos.z - fake_tz
+
+            # ângulo para olhar para o centro (em radianos)
+            rot_y = math.degrees(math.atan2(dx, dz))
+
+            slice_vertices_fake = obj_manager.get_vertices_slice(obj_index=10)
+            model_objeto(*slice_vertices_fake, DEFAULT_SHADER.getProgram(), t_x=fake_tx, t_y=-2, t_z=fake_tz, r_y=rot_y, s_x=8, s_y=8, s_z=8)
+            desenha_objeto(*slice_vertices_fake, texture_id=12+(i%2))
+
+        # print(f"t: ({tx}, {ty}, {tz}) r: ({rx}, {ry}, {rz}) s:  ({s})")
+        # print(cameraFront)
 
         # view
         cameraPos += cameraVel * deltaTime

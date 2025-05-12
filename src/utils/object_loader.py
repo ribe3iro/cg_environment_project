@@ -56,8 +56,8 @@ def load_texture_from_file(texture_id, texture_img):
     img = Image.open(texture_img)
     img_width = img.size[0]
     img_height = img.size[1]
-    image_data = img.tobytes("raw", "RGB", 0, -1)
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_width, img_height, 0, GL_RGB, GL_UNSIGNED_BYTE, image_data)
+    image_data = img.tobytes("raw", "RGBA", 0, -1)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_width, img_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data)
 
 # --------------------------------------------------------
 
