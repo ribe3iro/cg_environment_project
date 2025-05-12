@@ -431,40 +431,61 @@ if __name__ == '__main__':
         glBindBuffer(GL_ARRAY_BUFFER, objectsVBO)
 
         slice_vertices_casa = obj_manager.get_vertices_slice(obj_index=0)
+
+        slice_vertices_casa = obj_manager.get_vertices_slice(obj_index=0)
         model_objeto(*slice_vertices_casa, DEFAULT_SHADER.getProgram(), t_x=1, t_y=-2, t_z=-30, r_y=-90, s_x=2, s_y=2, s_z=2)
+        desenha_objeto(*slice_vertices_casa, texture_id=2)
         desenha_objeto(*slice_vertices_casa, texture_id=2)
 
         slice_vertices_mesa_escritorio = obj_manager.get_vertices_slice(obj_index=1)
+        slice_vertices_mesa_escritorio = obj_manager.get_vertices_slice(obj_index=1)
         model_objeto(*slice_vertices_mesa_escritorio, DEFAULT_SHADER.getProgram(), t_x=-1.9, t_y=-1.5, t_z=-32, r_x=90, r_y=180, r_z=-90, s_x=0.01, s_y=0.01, s_z=0.01)
+        desenha_objeto(*slice_vertices_mesa_escritorio, texture_id=3)
         desenha_objeto(*slice_vertices_mesa_escritorio, texture_id=3)
 
         slice_vertices_mesa = obj_manager.get_vertices_slice(obj_index=2)
+        slice_vertices_mesa = obj_manager.get_vertices_slice(obj_index=2)
         model_objeto(*slice_vertices_mesa, DEFAULT_SHADER.getProgram(), t_y=-1.55, t_z=-28.58, r_y=45, s_x=0.55, s_y=0.55, s_z=0.55)
+        desenha_objeto(*slice_vertices_mesa, texture_id=4)
         desenha_objeto(*slice_vertices_mesa, texture_id=4)
 
         slice_vertices_cama = obj_manager.get_vertices_slice(obj_index=3)
+        slice_vertices_cama = obj_manager.get_vertices_slice(obj_index=3)
         model_objeto(*slice_vertices_cama, DEFAULT_SHADER.getProgram(), t_x=3.6, t_y=-1.56, t_z=-31.9, r_y=-90, s_x=0.007, s_y=0.007, s_z=0.007)
+        desenha_objeto(*slice_vertices_cama, texture_id=5)
         desenha_objeto(*slice_vertices_cama, texture_id=5)
         
         slice_vertices_machado = obj_manager.get_vertices_slice(obj_index=4)
+        slice_vertices_machado = obj_manager.get_vertices_slice(obj_index=4)
         model_objeto(*slice_vertices_machado, DEFAULT_SHADER.getProgram(), t_y=-0.764, t_z=-28.75, r_y=-112)
+        desenha_objeto(*slice_vertices_machado, texture_id=6)
         desenha_objeto(*slice_vertices_machado, texture_id=6)
         
         slice_vertices_papel = obj_manager.get_vertices_slice(obj_index=5)
+        slice_vertices_papel = obj_manager.get_vertices_slice(obj_index=5)
         model_objeto(*slice_vertices_papel, DEFAULT_SHADER.getProgram(), t_x=-2.02, t_y=-0.723, t_z=-31.965, r_y=85)
+        desenha_objeto(*slice_vertices_papel, texture_id=7)
         desenha_objeto(*slice_vertices_papel, texture_id=7)
         
         slice_vertices_tronco1 = obj_manager.get_vertices_slice(obj_index=6)
+        slice_vertices_tronco1 = obj_manager.get_vertices_slice(obj_index=6)
         model_objeto(*slice_vertices_tronco1, DEFAULT_SHADER.getProgram(), t_x=-5, t_y=-2.3)
+        desenha_objeto(*slice_vertices_tronco1, texture_id=8)
+        slice_vertices_tronco2 = obj_manager.get_vertices_slice(obj_index=6)
         desenha_objeto(*slice_vertices_tronco1, texture_id=8)
         slice_vertices_tronco2 = obj_manager.get_vertices_slice(obj_index=6)
         model_objeto(*slice_vertices_tronco2, DEFAULT_SHADER.getProgram(), t_x=-25, t_y=-2.3, t_z=-20)
         desenha_objeto(*slice_vertices_tronco2, texture_id=8)
         slice_vertices_tronco3 = obj_manager.get_vertices_slice(obj_index=6)
+        desenha_objeto(*slice_vertices_tronco2, texture_id=8)
+        slice_vertices_tronco3 = obj_manager.get_vertices_slice(obj_index=6)
         model_objeto(*slice_vertices_tronco3, DEFAULT_SHADER.getProgram(), t_x=45, t_y=-2.3, t_z=-15)
         desenha_objeto(*slice_vertices_tronco3, texture_id=8)
         slice_vertices_tronco4 = obj_manager.get_vertices_slice(obj_index=6)
+        desenha_objeto(*slice_vertices_tronco3, texture_id=8)
+        slice_vertices_tronco4 = obj_manager.get_vertices_slice(obj_index=6)
         model_objeto(*slice_vertices_tronco4, DEFAULT_SHADER.getProgram(), t_x=15, t_y=-2.3, t_z=-45)
+        desenha_objeto(*slice_vertices_tronco4, texture_id=8)
         desenha_objeto(*slice_vertices_tronco4, texture_id=8)
 
         fantasma_tz = -28.6
@@ -473,7 +494,9 @@ if __name__ == '__main__':
         fantasma_dz = cameraPos.z - fantasma_tz
         fantasma_rot_y = math.degrees(math.atan2(fantasma_dx, fantasma_dz))
         slice_vertices_fantasma = obj_manager.get_vertices_slice(obj_index=7)
+        slice_vertices_fantasma = obj_manager.get_vertices_slice(obj_index=7)
         model_objeto(*slice_vertices_fantasma, DEFAULT_SHADER.getProgram(), t_y=-1.29, t_z=fantasma_tz, r_y=fantasma_rot_y, s_x=0.5, s_y=0.5, s_z=0.5)
+        desenha_objeto(*slice_vertices_fantasma, texture_id=9)
         desenha_objeto(*slice_vertices_fantasma, texture_id=9)
 
         n_fake_arvores = 10
@@ -492,7 +515,9 @@ if __name__ == '__main__':
             rot_y = math.degrees(math.atan2(dx, dz))
 
             slice_vertices_fake = obj_manager.get_vertices_slice(obj_index=8)
+            slice_vertices_fake = obj_manager.get_vertices_slice(obj_index=8)
             model_objeto(*slice_vertices_fake, DEFAULT_SHADER.getProgram(), t_x=fake_tx, t_y=-2, t_z=fake_tz, r_y=rot_y, s_x=8, s_y=8, s_z=8)
+            desenha_objeto(*slice_vertices_fake, texture_id=10+(i%2))
             desenha_objeto(*slice_vertices_fake, texture_id=10+(i%2))
 
         escala = 10.0
@@ -507,16 +532,16 @@ if __name__ == '__main__':
         haunter_rot_y = math.degrees(math.atan2(haunter_dx, haunter_dz))
         
         slice_vertices_olhos = obj_manager.get_vertices_slice(obj_index=9)
+        slice_vertices_olhos = obj_manager.get_vertices_slice(obj_index=9)
         model_objeto(*slice_vertices_olhos, DEFAULT_SHADER.getProgram(),t_x=haunter_x, t_z=haunter_z, r_y=haunter_rot_y)
+        desenha_objeto(*slice_vertices_olhos, texture_id=12)
         desenha_objeto(*slice_vertices_olhos, texture_id=12)
         
         if mostrar_corpo:
             slice_vertices_haunter = obj_manager.get_vertices_slice(obj_index=10)
+            slice_vertices_haunter = obj_manager.get_vertices_slice(obj_index=10)
             model_objeto(*slice_vertices_haunter, DEFAULT_SHADER.getProgram(),t_x=haunter_x, t_z=haunter_z, r_y=haunter_rot_y)
             desenha_objeto(*slice_vertices_haunter, texture_id=13)
-
-        # print(f"t: ({tx}, {ty}, {tz}) r: ({rx}, {ry}, {rz}) s:  ({s})")
-        # print(cameraFront)
 
         # view
         cameraPos += cameraVel * deltaTime
