@@ -95,7 +95,8 @@ def camera_movement_handler():
 
 # funções callback
 def key_event(window,key,scancode,action,mods):
-    global cameraPos, show_lines, flying_state, edit_pos, mostrar_corpo
+    global cameraPos, show_lines, flying_state
+    global papelPos, papelEscala, pegandoPapel, edit_pos, mostrar_corpo
     # ESC - fechar janela
     if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
         glfw.set_window_should_close(window, True)
@@ -117,6 +118,12 @@ def key_event(window,key,scancode,action,mods):
         flying_state = not flying_state
         if not flying_state:
             cameraPos.y = CAMERA_HEIGHT
+
+    # E - pegar nota
+    if key == glfw.KEY_E and action == glfw.PRESS:
+        distToNote = glm.distance(cameraPos, papelPos)
+        if distToNote < 2:
+            pegandoPapel = True
     
     # TAB - toggle edição dos objetos
     if key == glfw.KEY_TAB and action == glfw.PRESS:
@@ -359,6 +366,9 @@ if __name__ == '__main__':
 
 
     # variáveis auxiliares
+    papelPos = glm.vec3(-2.02, -0.723, -31.965)
+    papelEscala = 1
+    pegandoPapel = False
     haunter_t = 0.0
     mostrar_corpo = False
 
@@ -452,8 +462,16 @@ if __name__ == '__main__':
         model_objeto(*slice_vertices_machado, DEFAULT_SHADER.getProgram(), t_y=-0.764, t_z=-28.75, r_y=-112)
         desenha_objeto(*slice_vertices_machado, texture_id=8)
         
+        if pegandoPapel:
+            papelEscala *= 0.9 * deltaTime * 50
+            if papelEscala < 0.01:
+                papelEscala = 0
+                pegandoPapel = False
         slice_vertices_papel = obj_manager.get_vertices_slice(obj_index=7)
-        model_objeto(*slice_vertices_papel, DEFAULT_SHADER.getProgram(), t_x=-2.02, t_y=-0.723, t_z=-31.965, r_y=85)
+        model_objeto(*slice_vertices_papel, DEFAULT_SHADER.getProgram(), 
+            t_x=papelPos.x, t_y=papelPos.y, t_z=papelPos.z, 
+            s_x=papelEscala, s_y=papelEscala, s_z=papelEscala, 
+            r_y=85)
         desenha_objeto(*slice_vertices_papel, texture_id=9)
         
         slice_vertices_tronco1 = obj_manager.get_vertices_slice(obj_index=8)
