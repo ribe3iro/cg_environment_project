@@ -580,20 +580,20 @@ if __name__ == '__main__':
         cameraVel = glm.vec3(0.0, 0.0, 0.0)
 
         # verificando limites da cena
-        if cameraPos.x < X_LIMIT[0]:
-            cameraPos.x = X_LIMIT[0]
-        elif cameraPos.x > X_LIMIT[1]:
-            cameraPos.x = X_LIMIT[1]
+        if cameraPos.x < X_LIMIT[0] + 0.5:
+            cameraPos.x = X_LIMIT[0] + 0.5
+        elif cameraPos.x > X_LIMIT[1] - 0.5:
+            cameraPos.x = X_LIMIT[1] - 0.5
         
         if cameraPos.y < Y_LIMIT[0]:
             cameraPos.y = Y_LIMIT[0]
         elif cameraPos.y > Y_LIMIT[1]:
             cameraPos.y = Y_LIMIT[1]
         
-        if cameraPos.z < Z_LIMIT[0]:
-            cameraPos.z = Z_LIMIT[0]
-        elif cameraPos.z > Z_LIMIT[1]:
-            cameraPos.z = Z_LIMIT[1]
+        if cameraPos.z < Z_LIMIT[0] + 0.5:
+            cameraPos.z = Z_LIMIT[0] + 0.5
+        elif cameraPos.z > Z_LIMIT[1] - 0.5:
+            cameraPos.z = Z_LIMIT[1] - 0.5
 
         mat_view = view(cameraPos, cameraFront, cameraUp)
         loc_view = glGetUniformLocation(DEFAULT_SHADER.getProgram(), "view")
