@@ -55,7 +55,7 @@ def desenha_objeto(vertice_inicial, num_vertices, texture_id=-1, cube_map=False)
 def camera_movement_handler():
     global window, cameraFront, cameraUp 
     global cameraVel, CAMERA_SPEED_WALKING, CAMERA_SPEED_RUNNING, flying_state
-    global edit_pos, haunter_t, deltaTime
+    global haunter_t, deltaTime
 
     OBJ_MOVE_SPEED = 1
     camera_speed = CAMERA_SPEED_WALKING
@@ -95,8 +95,10 @@ def camera_movement_handler():
 
 # funções callback
 def key_event(window,key,scancode,action,mods):
-    global cameraPos, show_lines, flying_state
-    global papelPos, papelEscala, pegandoPapel, papelVisivel, edit_pos, mostrar_corpo
+    global cameraPos
+    global papelPos, papelEscala, pegandoPapel, papelVisivel
+    global machadoRotacao
+    global show_lines, flying_state, mostrar_corpo
     # ESC - fechar janela
     if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
         glfw.set_window_should_close(window, True)
@@ -125,10 +127,20 @@ def key_event(window,key,scancode,action,mods):
         if distToNote < 2:
             pegandoPapel = True
             papelVisivel = not papelVisivel
+
+    # C - toggle rotação machado (anti-horário)
+    if key == glfw.KEY_C and action == glfw.PRESS:
+        if machadoRotacao < 0:
+            machadoRotacao = 0
+        else:
+            machadoRotacao = 1
     
-    # TAB - toggle edição dos objetos
-    if key == glfw.KEY_TAB and action == glfw.PRESS:
-        edit_pos = not edit_pos
+    # V - toggle rotação machado (horário)
+    if key == glfw.KEY_V and action == glfw.PRESS:
+        if machadoRotacao > 0:
+            machadoRotacao = 0
+        else:
+            machadoRotacao = -1
 
 def framebuffer_size_callback(window, largura, altura):
     glViewport(0, 0, largura, altura)
@@ -371,13 +383,14 @@ if __name__ == '__main__':
     papelEscala = 1
     pegandoPapel = False
     papelVisivel = True
+    machadoRotacao = 0
+    machadoAngulo = -112
     haunter_t = 0.0
     mostrar_corpo = False
 
     # variáveis para os callbacks
     show_lines = False
     flying_state = False
-    edit_pos = True
 
     firstMouse = True
     yaw   = -90.0
@@ -460,8 +473,9 @@ if __name__ == '__main__':
         model_objeto(*slice_vertices_cama, DEFAULT_SHADER.getProgram(), t_x=3.6, t_y=-1.56, t_z=-31.9, r_y=-90, s_x=0.007, s_y=0.007, s_z=0.007)
         desenha_objeto(*slice_vertices_cama, texture_id=7)
         
+        machadoAngulo += (machadoRotacao * deltaTime * 480)
         slice_vertices_machado = obj_manager.get_vertices_slice(obj_index=6)
-        model_objeto(*slice_vertices_machado, DEFAULT_SHADER.getProgram(), t_y=-0.764, t_z=-28.75, r_y=-112)
+        model_objeto(*slice_vertices_machado, DEFAULT_SHADER.getProgram(), t_y=-0.764, t_z=-28.75, r_y=machadoAngulo)
         desenha_objeto(*slice_vertices_machado, texture_id=8)
         
         if pegandoPapel:
